@@ -148,29 +148,31 @@ describe('GithubApi', () => {
       mockHttpClient.mockResolvedValue({
         ok: true,
         json: async () => mockRepos,
+        headers: new Headers(),
       });
 
       const result = await githubApi.getUserRepositories('testuser');
 
       expect(mockHttpClient).toHaveBeenCalledWith(
-        `${GITHUB_API_BASE_URL}/users/testuser/repos?sort=updated&per_page=100`,
+        `${GITHUB_API_BASE_URL}/users/testuser/repos?sort=full_name&page=1&per_page=30`,
         expect.objectContaining({
           headers: GITHUB_API_HEADERS,
         })
       );
-      expect(result).toEqual(mockRepos);
+      expect(result).toEqual({ items: mockRepos, hasNextPage: false });
     });
 
     it('should apply custom perPage parameter', async () => {
       mockHttpClient.mockResolvedValue({
         ok: true,
         json: async () => [],
+        headers: new Headers(),
       });
 
-      await githubApi.getUserRepositories('testuser', 50);
+      await githubApi.getUserRepositories('testuser', 2, 50);
 
       expect(mockHttpClient).toHaveBeenCalledWith(
-        `${GITHUB_API_BASE_URL}/users/testuser/repos?sort=updated&per_page=50`,
+        `${GITHUB_API_BASE_URL}/users/testuser/repos?sort=full_name&page=2&per_page=50`,
         expect.any(Object)
       );
     });
@@ -179,6 +181,7 @@ describe('GithubApi', () => {
       mockHttpClient.mockResolvedValue({
         ok: true,
         json: async () => [],
+        headers: new Headers(),
       });
 
       await githubApi.getUserRepositories('user-name+special');
@@ -225,6 +228,31 @@ describe('GithubApi', () => {
 
       await expect(githubApi.getUserRepositories('testuser')).rejects.toThrow(ApiError);
       await expect(githubApi.getUserRepositories('testuser')).rejects.toThrow('GitHub API error: 500');
+    });
+
+    it('should detect next page from Link header', async () => {
+      const headers = new Headers();
+      headers.set('Link', '<https://api.github.com/user/repos?page=2>; rel="next", <https://api.github.com/user/repos?page=3>; rel="last"');
+
+      mockHttpClient.mockResolvedValue({
+        ok: true,
+        json: async () => [],
+        headers,
+      });
+
+      const result = await githubApi.getUserRepositories('testuser');
+      expect(result.hasNextPage).toBe(true);
+    });
+
+    it('should return hasNextPage false when no Link header', async () => {
+      mockHttpClient.mockResolvedValue({
+        ok: true,
+        json: async () => [],
+        headers: new Headers(),
+      });
+
+      const result = await githubApi.getUserRepositories('testuser');
+      expect(result.hasNextPage).toBe(false);
     });
   });
 

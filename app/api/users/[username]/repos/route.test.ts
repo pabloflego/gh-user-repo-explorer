@@ -52,19 +52,22 @@ describe('GET /api/users/[username]/repos', () => {
   });
 
   it('should successfully return repositories when username is provided', async () => {
-    const mockRepos = [
-      {
-        id: 1,
-        name: 'repo1',
-        full_name: 'testuser/repo1',
-        description: 'Test repository',
-        html_url: 'https://github.com/testuser/repo1',
-        stargazers_count: 10,
-        forks_count: 5,
-        language: 'TypeScript',
-        updated_at: '2025-01-01T00:00:00Z',
-      },
-    ];
+    const mockRepos = {
+      items: [
+        {
+          id: 1,
+          name: 'repo1',
+          full_name: 'testuser/repo1',
+          description: 'Test repository',
+          html_url: 'https://github.com/testuser/repo1',
+          stargazers_count: 10,
+          forks_count: 5,
+          language: 'TypeScript',
+          updated_at: '2025-01-01T00:00:00Z',
+        },
+      ],
+      hasNextPage: false,
+    };
 
     mockGetUserRepositories.mockResolvedValue(mockRepos);
 
@@ -76,7 +79,7 @@ describe('GET /api/users/[username]/repos', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual(mockRepos);
-    expect(mockGetUserRepositories).toHaveBeenCalledWith('testuser');
+    expect(mockGetUserRepositories).toHaveBeenCalledWith('testuser', 1);
     expect(mockLoggerError).not.toHaveBeenCalled();
   });
 
@@ -171,18 +174,18 @@ describe('GET /api/users/[username]/repos', () => {
   });
 
   it('should pass username parameter correctly to getUserRepositories', async () => {
-    mockGetUserRepositories.mockResolvedValue([]);
+    mockGetUserRepositories.mockResolvedValue({ items: [], hasNextPage: false });
 
     const request = new Request('http://localhost:3000/api/users/john-doe/repos');
     const params = Promise.resolve({ username: 'john-doe' });
     
     await GET(request, { params });
 
-    expect(mockGetUserRepositories).toHaveBeenCalledWith('john-doe');
+    expect(mockGetUserRepositories).toHaveBeenCalledWith('john-doe', 1);
   });
 
   it('should create new GithubApi instance for each request', async () => {
-    mockGetUserRepositories.mockResolvedValue([]);
+    mockGetUserRepositories.mockResolvedValue({ items: [], hasNextPage: false });
 
     const request1 = new Request('http://localhost:3000/api/users/user1/repos');
     const params1 = Promise.resolve({ username: 'user1' });

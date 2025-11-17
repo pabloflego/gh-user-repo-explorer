@@ -1,5 +1,6 @@
-import { GithubApiPort, GitHubRepository, GitHubUserSearchResponse } from "@/lib/application/ports/GithubApiPort";
-import { HttpClientPort } from "../ports/HttpClientPort";
+import type { GitHubRepository } from "@/lib/domain/GithubEntities";
+import { GithubApiPort, GitHubUserSearchResponse, GitHubRepositoriesResponse } from "@/lib/backend/application/ports/GithubApiPort";
+import { HttpClientPort } from "@/lib/backend/application/ports/HttpClientPort";
 
 export const GITHUB_API_BASE_URL = 'https://api.github.com';
 export const GITHUB_API_HEADERS = {
@@ -85,12 +86,12 @@ export class GithubApi implements GithubApiPort {
     };
   }
 
-  async getUserRepositories(username: string, perPage: number = 100): Promise<GitHubRepository[]> {
+  async getUserRepositories(username: string, page: number = 1, perPage: number = 30): Promise<GitHubRepositoriesResponse> {
     if (!username.trim()) {
       throw new EmptyUsernameError();
     }
 
-    const url = `${GITHUB_API_BASE_URL}/users/${encodeURIComponent(username)}/repos?sort=updated&per_page=${perPage}`;
+    const url = `${GITHUB_API_BASE_URL}/users/${encodeURIComponent(username)}/repos?sort=full_name&page=${page}&per_page=${perPage}`;
 
     const response = await this.httpClient(url, {
       headers: GITHUB_API_HEADERS,
@@ -108,6 +109,13 @@ export class GithubApi implements GithubApiPort {
     }
 
     const data: GitHubRepository[] = await response.json();
-    return data;
+    
+    const linkHeader = response.headers.get('Link');
+    const hasNextPage = linkHeader ? linkHeader.includes('rel="next"') : false;
+
+    return {
+      items: data,
+      hasNextPage,
+    };
   }
 }

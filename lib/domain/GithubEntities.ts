@@ -22,8 +22,3 @@ export interface GitHubRepository {
   updated_at: string;
   topics?: string[];
 }
-
-export interface GitHubUserSearchResponse {
-  items: GitHubUser[];
-  total_count: number;
-}

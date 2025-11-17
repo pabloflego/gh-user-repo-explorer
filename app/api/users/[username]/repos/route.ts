@@ -9,6 +9,9 @@ export async function GET(
   // TODO: Use dependency injection for Logger and GithubApi, possibly with NEXTJS intrumentation
   const logger = new Logger('ReposAPI');
   const { username } = await params;
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get('page') || '1', 10);
+
 
   if (!username) {
     return NextResponse.json(
@@ -19,7 +22,7 @@ export async function GET(
 
   try {
     const githubApi = new GithubApi();
-    const data = await githubApi.getUserRepositories(username);
+    const data = await githubApi.getUserRepositories(username, page);
     return NextResponse.json(data);
   } catch (error) {
     let errorMessage: string;
