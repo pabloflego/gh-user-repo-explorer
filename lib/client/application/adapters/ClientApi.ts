@@ -4,7 +4,7 @@ import { ClientApiPort } from "../ports/ClientApiPort";
 const BASE_URL = '/api';
 
 export class ClientApi implements ClientApiPort {
-  constructor(private httpClient: BrowserHttpClientPort = fetch) {}
+  constructor(private httpClient: BrowserHttpClientPort) {}
 
   async searchUsers(query: string) {
     const response = await this.httpClient(`${BASE_URL}/users?q=${encodeURIComponent(query)}`);
