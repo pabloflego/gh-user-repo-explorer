@@ -7,7 +7,7 @@ import {
 import { Logger } from '@/lib/application/adapters/Logger';
 
 export async function GET(request: Request) {
-  // TODO: Use dependency injection for Logger and GitHubApi
+  // TODO: Use dependency injection for Logger and GithubApi, possibly with NEXTJS intrumentation
   const logger = new Logger('UserAPI');
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');

@@ -17,7 +17,7 @@ vi.mock('@/lib/application/adapters/GithubApi', async () => {
   };
 });
 
-vi.mock('@/lib/application/adapters/Logger', async () => {
+vi.mock('@/lib/application/adapters/Logger', () => {
   return {
     Logger: vi.fn(),
   };
