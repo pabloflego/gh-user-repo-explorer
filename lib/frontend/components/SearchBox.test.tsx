@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act } from 'react';
-import SearchBox from './SearchBox';
+import SearchBox, { DEBOUNCE_DELAY_MS } from './SearchBox';
 
 describe('SearchBox', () => {
   let mockOnChange: (value: string) => void;
@@ -63,13 +63,13 @@ describe('SearchBox', () => {
     
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalled();
-    }, { timeout: 500 });
+    }, { timeout: DEBOUNCE_DELAY_MS + 200 });
   });
 
   it('should not trigger search for empty input', async () => {
     render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
     
-    await new Promise(resolve => setTimeout(resolve, 400));
+    await new Promise(resolve => setTimeout(resolve, DEBOUNCE_DELAY_MS + 100));
     
     expect(mockOnSearch).not.toHaveBeenCalled();
   });
@@ -79,7 +79,7 @@ describe('SearchBox', () => {
     
     await act(async () => {
       rerender(<SearchBox value="   " onChange={mockOnChange} onSearch={mockOnSearch} />);
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise(resolve => setTimeout(resolve, DEBOUNCE_DELAY_MS + 100));
     });
     
     expect(mockOnSearch).not.toHaveBeenCalled();
@@ -92,7 +92,7 @@ describe('SearchBox', () => {
     
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalled();
-    }, { timeout: 500 });
+    }, { timeout: DEBOUNCE_DELAY_MS + 200 });
   });
 
   it('should update value when prop changes', () => {

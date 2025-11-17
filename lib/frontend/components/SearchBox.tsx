@@ -15,13 +15,15 @@ const sanitizeInput = (input: string): string => {
     .replace(/[<>\"'&]/g, '');
 };
 
+export const DEBOUNCE_DELAY_MS = 300;
+
 export default function SearchBox({ value, onChange, onSearch }: SearchBoxProps) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedValue(value);
-    }, 300);
+    }, DEBOUNCE_DELAY_MS);
 
     return () => clearTimeout(timer);
   }, [value]);
@@ -30,7 +32,7 @@ export default function SearchBox({ value, onChange, onSearch }: SearchBoxProps)
     if (debouncedValue.trim()) {
       onSearch();
     }
-  }, [debouncedValue, onSearch]);
+  }, [debouncedValue]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => { onChange(sanitizeInput(e.target.value)) };
 
