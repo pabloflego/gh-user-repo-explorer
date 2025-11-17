@@ -8,6 +8,13 @@ interface SearchBoxProps {
   onSearch: () => void;
 }
 
+const sanitizeInput = (input: string): string => {
+  return input
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[<>\"'&]/g, '');
+};
+
 export default function SearchBox({ value, onChange, onSearch }: SearchBoxProps) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -25,12 +32,17 @@ export default function SearchBox({ value, onChange, onSearch }: SearchBoxProps)
     }
   }, [debouncedValue, onSearch]);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeInput(e.target.value);
+    onChange(sanitized);
+  };
+
   return (
     <div className="w-full">
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleInputChange}
         placeholder="Enter username"
         className="w-full px-4 py-3 text-base bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 placeholder-gray-500"
       />

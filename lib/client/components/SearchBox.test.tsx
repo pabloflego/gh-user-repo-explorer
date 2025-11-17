@@ -104,4 +104,60 @@ describe('SearchBox', () => {
     input = screen.getByPlaceholderText('Enter username') as HTMLInputElement;
     expect(input.value).toBe('updated');
   });
+
+  describe('Input Sanitization', () => {
+    it('should trim whitespace from input', () => {
+      render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+      
+      const input = screen.getByPlaceholderText('Enter username');
+      fireEvent.change(input, { target: { value: '  testuser  ' } });
+      
+      expect(mockOnChange).toHaveBeenCalledWith('testuser');
+    });
+
+    it('should replace multiple spaces with single space', () => {
+      render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+      
+      const input = screen.getByPlaceholderText('Enter username');
+      fireEvent.change(input, { target: { value: 'test  user' } });
+      
+      expect(mockOnChange).toHaveBeenCalledWith('test user');
+    });
+
+    it('should remove dangerous characters', () => {
+      render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+      
+      const input = screen.getByPlaceholderText('Enter username');
+      fireEvent.change(input, { target: { value: '<script>alert("xss")</script>' } });
+      
+      expect(mockOnChange).toHaveBeenCalledWith('scriptalert(xss)/script');
+    });
+
+    it('should remove HTML entities', () => {
+      render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+      
+      const input = screen.getByPlaceholderText('Enter username');
+      fireEvent.change(input, { target: { value: 'test&user' } });
+      
+      expect(mockOnChange).toHaveBeenCalledWith('testuser');
+    });
+
+    it('should remove quotes from input', () => {
+      render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+      
+      const input = screen.getByPlaceholderText('Enter username');
+      fireEvent.change(input, { target: { value: 'test"user\'name' } });
+      
+      expect(mockOnChange).toHaveBeenCalledWith('testusername');
+    });
+
+    it('should allow alphanumeric and hyphens', () => {
+      render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+      
+      const input = screen.getByPlaceholderText('Enter username');
+      fireEvent.change(input, { target: { value: 'test-user123' } });
+      
+      expect(mockOnChange).toHaveBeenCalledWith('test-user123');
+    });
+  });
 });
