@@ -4,12 +4,7 @@ This project uses [Playwright](https://playwright.dev/) for end-to-end testing w
 
 ## Architecture
 
-E2E tests use **dependency injection** to swap the real GitHub API with an in-memory mock:
-
-- **Real API** (`GithubApi`): Used in development and production
-- **Mock API** (`InMemoryGithubApi`): Used when `NODE_ENV=test` environment variable is set
-
-The factory pattern (`githubApiFactory.ts`) determines which implementation to load based on environment variables.
+E2E tests run against the real GitHub API to ensure full integration testing.
 
 ## Running E2E Tests
 
@@ -37,7 +32,7 @@ pnpm test:e2e:headed
 pnpm test:e2e:debug
 ```
 
-All test commands automatically set `NODE_ENV=test` to use the mock GitHub API.
+All test commands run against the real GitHub API.
 
 ## Mock Data
 
