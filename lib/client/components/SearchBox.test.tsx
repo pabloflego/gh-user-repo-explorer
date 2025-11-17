@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { act } from 'react';
 import SearchBox from './SearchBox';
 
 describe('SearchBox', () => {
@@ -76,9 +77,10 @@ describe('SearchBox', () => {
   it('should not trigger search for whitespace-only input', async () => {
     const { rerender } = render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
     
-    rerender(<SearchBox value="   " onChange={mockOnChange} onSearch={mockOnSearch} />);
-    
-    await new Promise(resolve => setTimeout(resolve, 400));
+    await act(async () => {
+      rerender(<SearchBox value="   " onChange={mockOnChange} onSearch={mockOnSearch} />);
+      await new Promise(resolve => setTimeout(resolve, 400));
+    });
     
     expect(mockOnSearch).not.toHaveBeenCalled();
   });

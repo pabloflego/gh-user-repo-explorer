@@ -32,10 +32,7 @@ export default function SearchBox({ value, onChange, onSearch }: SearchBoxProps)
     }
   }, [debouncedValue, onSearch]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const sanitized = sanitizeInput(e.target.value);
-    onChange(sanitized);
-  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => { onChange(sanitizeInput(e.target.value)) };
 
   return (
     <div className="w-full">
