@@ -1,8 +1,8 @@
 'use client';
 import { GitHubUser } from "@/lib/application/ports/GithubApiPort";
-import ErrorMessage from "@/lib/ui/ErrorMessage";
-import LoadingSpinner from "@/lib/ui/LoadingSpinner";
-import SearchInput from "@/lib/ui/SearchInput";
+import ErrorMessage from "@/lib/client/components/ErrorMessage";
+import LoadingSpinner from "@/lib/client/components/LoadingSpinner";
+import SearchInput from "@/lib/client/components/SearchInput";
 import { useCallback, useState } from "react";
 
 export default function Home() {
