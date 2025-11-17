@@ -2,21 +2,22 @@
 
 import type { GitHubUser, GitHubRepository } from "@/lib/domain/GithubEntities";
 import UserCard from './UserCard';
-import { useCallback, useState } from 'react';
-
 
 interface UserListProps {
   users: GitHubUser[];
+  selectedUser: GitHubUser | null;
+  repositories: GitHubRepository[];
+  isLoadingRepos: boolean;
+  onUserSelect: (user: GitHubUser) => void;
 }
 
-export default function UserList({ users }: UserListProps) {
-  const [selectedUser, setSelectedUser] = useState<GitHubUser | null>(null);
-  const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const handleUserSelection = useCallback(async (user: GitHubUser) => {
-    // TODO: Implement repository fetching logic
-  }, [selectedUser]);
-
+export default function UserList({ 
+  users, 
+  selectedUser, 
+  repositories, 
+  isLoadingRepos, 
+  onUserSelect 
+}: UserListProps) {
   if (users.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-8 text-center">
@@ -36,10 +37,10 @@ export default function UserList({ users }: UserListProps) {
         <UserCard
           key={user.id}
           user={user}
-          onClick={() => handleUserSelection(user)}
+          onClick={() => onUserSelect(user)}
           isExpanded={selectedUser?.id === user.id}
           repositories={selectedUser?.id === user.id ? repositories : []}
-          isLoading={selectedUser?.id === user.id ? isLoading : false}
+          isLoading={selectedUser?.id === user.id ? isLoadingRepos : false}
         />
       ))}
     </div>

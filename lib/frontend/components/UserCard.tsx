@@ -2,6 +2,7 @@
 
 import type { GitHubUser, GitHubRepository } from "@/lib/domain/GithubEntities";
 import LoadingSpinner from './LoadingSpinner';
+import RepositoryList from './RepositoryList';
 
 interface UserCardProps {
   user: GitHubUser;
@@ -40,8 +41,7 @@ export default function UserCard({
           {isLoading ? (
             <LoadingSpinner />
           ) : (
-            // Repositories List
-            null
+            <RepositoryList repositories={repositories} username={user.login} />
           )}
         </div>
       )}

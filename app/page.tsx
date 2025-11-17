@@ -5,7 +5,7 @@ import SearchBox from "@/lib/frontend/components/SearchBox";
 import UserList from "@/lib/frontend/components/UserList";
 import { useClientApi } from "@/lib/frontend/ClientApiProvider";
 import { useCallback, useState } from "react";
-import type { GitHubUser } from "@/lib/domain/GithubEntities";
+import type { GitHubUser, GitHubRepository } from "@/lib/domain/GithubEntities";
 
 export default function Home() {
   const clientApi = useClientApi();
@@ -13,6 +13,10 @@ export default function Home() {
   const [users, setUsers] = useState<GitHubUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [selectedUser, setSelectedUser] = useState<GitHubUser | null>(null);
+  const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
+  const [isLoadingRepos, setIsLoadingRepos] = useState(false);
 
   const searchUsers = useCallback(async () => {
     if (!searchQuery.trim()) {
@@ -32,6 +36,28 @@ export default function Home() {
       setIsLoading(false);
     }
   }, [searchQuery, clientApi]);
+
+  const handleUserSelection = useCallback(async (user: GitHubUser) => {
+    if (selectedUser?.id === user.id) {
+      setSelectedUser(null);
+      setRepositories([]);
+      return;
+    }
+
+    setSelectedUser(user);
+    setIsLoadingRepos(true);
+    setError(null);
+
+    try {
+      const data = await clientApi.fetchUserRepositories(user.login);
+      setRepositories(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch repositories');
+      setRepositories([]);
+    } finally {
+      setIsLoadingRepos(false);
+    }
+  }, [selectedUser, clientApi]);
 
   const isEmptyQuery = !searchQuery && users.length === 0 && !isLoading;
   const maybeResults = !isLoading && searchQuery.trim();
@@ -61,7 +87,13 @@ export default function Home() {
 
         {maybeResults && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-            <UserList users={users} />
+            <UserList 
+              users={users} 
+              selectedUser={selectedUser}
+              repositories={repositories}
+              isLoadingRepos={isLoadingRepos}
+              onUserSelect={handleUserSelection}
+            />
           </div>
         )}
 
