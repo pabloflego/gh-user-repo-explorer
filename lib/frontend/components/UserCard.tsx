@@ -10,6 +10,8 @@ interface UserCardProps {
   isExpanded?: boolean;
   repositories?: GitHubRepository[];
   isLoading?: boolean;
+  hasMoreRepos?: boolean;
+  onLoadMore?: () => void;
 }
 
 export default function UserCard({ 
@@ -17,7 +19,9 @@ export default function UserCard({
   onClick, 
   isExpanded = false,
   repositories = [],
-  isLoading = false
+  isLoading = false,
+  hasMoreRepos = false,
+  onLoadMore
 }: UserCardProps) {
   return (
     <div className="w-full rounded-lg overflow-hidden">
@@ -38,10 +42,16 @@ export default function UserCard({
       
       {isExpanded && (
         <div className="mt-3 pl-4">
-          {isLoading ? (
+          {isLoading && repositories.length === 0 ? (
             <LoadingSpinner />
           ) : (
-            <RepositoryList repositories={repositories} username={user.login} />
+            <RepositoryList 
+              repositories={repositories} 
+              username={user.login}
+              hasMoreRepos={hasMoreRepos}
+              onLoadMore={onLoadMore}
+              isLoading={isLoading}
+            />
           )}
         </div>
       )}

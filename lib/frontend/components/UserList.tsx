@@ -9,6 +9,8 @@ interface UserListProps {
   repositories: GitHubRepository[];
   isLoadingRepos: boolean;
   onUserSelect: (user: GitHubUser) => void;
+  hasMoreRepos: boolean;
+  onLoadMore: () => void;
 }
 
 export default function UserList({ 
@@ -16,7 +18,9 @@ export default function UserList({
   selectedUser, 
   repositories, 
   isLoadingRepos, 
-  onUserSelect 
+  onUserSelect,
+  hasMoreRepos,
+  onLoadMore
 }: UserListProps) {
   if (users.length === 0) {
     return (
@@ -41,6 +45,8 @@ export default function UserList({
           isExpanded={selectedUser?.id === user.id}
           repositories={selectedUser?.id === user.id ? repositories : []}
           isLoading={selectedUser?.id === user.id ? isLoadingRepos : false}
+          hasMoreRepos={selectedUser?.id === user.id ? hasMoreRepos : false}
+          onLoadMore={onLoadMore}
         />
       ))}
     </div>

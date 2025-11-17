@@ -4,7 +4,7 @@ import LoadingSpinner from "@/lib/frontend/components/LoadingSpinner";
 import SearchBox from "@/lib/frontend/components/SearchBox";
 import UserList from "@/lib/frontend/components/UserList";
 import { useClientApi } from "@/lib/frontend/ClientApiProvider";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import type { GitHubUser, GitHubRepository } from "@/lib/domain/GithubEntities";
 
 export default function Home() {
@@ -17,6 +17,8 @@ export default function Home() {
   const [selectedUser, setSelectedUser] = useState<GitHubUser | null>(null);
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [isLoadingRepos, setIsLoadingRepos] = useState(false);
+  const currentPageRef = useRef(1);
+  const [hasMoreRepos, setHasMoreRepos] = useState(false);
 
   const searchUsers = useCallback(async () => {
     if (!searchQuery.trim()) {
@@ -40,24 +42,48 @@ export default function Home() {
   const handleUserSelection = useCallback(async (user: GitHubUser) => {
     if (selectedUser?.id === user.id) {
       setSelectedUser(null);
-      setRepositories([]);
       return;
     }
 
     setSelectedUser(user);
+    setRepositories([]);
+    currentPageRef.current = 1;
+    setHasMoreRepos(false);
     setIsLoadingRepos(true);
     setError(null);
 
     try {
-      const data = await clientApi.fetchUserRepositories(user.login);
-      setRepositories(data || []);
+      const data = await clientApi.fetchUserRepositories(user.login, 1);
+      setRepositories(data.items || []);
+      setHasMoreRepos(data.hasNextPage || false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch repositories');
       setRepositories([]);
+      setHasMoreRepos(false);
     } finally {
       setIsLoadingRepos(false);
     }
   }, [selectedUser, clientApi]);
+
+  const loadMoreRepositories = useCallback(async () => {
+    if (!selectedUser || isLoadingRepos) return;
+
+    setIsLoadingRepos(true);
+    setError(null);
+
+    const nextPage = currentPageRef.current + 1;
+
+    try {
+      const data = await clientApi.fetchUserRepositories(selectedUser.login, nextPage);
+      setRepositories(prev => [...prev, ...(data.items || [])]);
+      setHasMoreRepos(data.hasNextPage || false);
+      currentPageRef.current = nextPage;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load more repositories');
+    } finally {
+      setIsLoadingRepos(false);
+    }
+  }, [selectedUser, isLoadingRepos, clientApi]);
 
   const isEmptyQuery = !searchQuery && users.length === 0 && !isLoading;
   const maybeResults = !isLoading && searchQuery.trim();
@@ -93,6 +119,8 @@ export default function Home() {
               repositories={repositories}
               isLoadingRepos={isLoadingRepos}
               onUserSelect={handleUserSelection}
+              hasMoreRepos={hasMoreRepos}
+              onLoadMore={loadMoreRepositories}
             />
           </div>
         )}
