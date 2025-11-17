@@ -1,4 +1,6 @@
+import { GitHubRepository, GitHubUser } from "@/lib/domain/GithubEntities";
+
 export interface ClientApiPort {
-  searchUsers(query: string): Promise<any>;
-  fetchUserRepositories(username: string): Promise<any>;
+  searchUsers(query: string): Promise<GitHubUser[]>;
+  fetchUserRepositories(username: string): Promise<GitHubRepository[]>;
 }
