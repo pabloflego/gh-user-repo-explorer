@@ -1,13 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './route';
-import { 
-  GithubApi,
-  ApiError,
-  EmptyQueryError,
-  RateLimitError,
-  InvalidQueryError,
-} from '@/lib/application/adapters/GithubApi';
-import { Logger } from '@/lib/application/adapters/Logger';
+import { GithubApi, RateLimitError, InvalidQueryError, EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { Logger } from '@/lib/backend/application/adapters/Logger';
 
 vi.mock('@/lib/application/adapters/GithubApi', async () => {
   const actual = await vi.importActual('@/lib/application/adapters/GithubApi');

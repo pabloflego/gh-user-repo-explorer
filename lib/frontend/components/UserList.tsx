@@ -1,6 +1,6 @@
 'use client';
 
-import { GitHubUser, GitHubRepository } from '@/lib/application/ports/GithubApiPort';
+import type { GitHubUser, GitHubRepository } from "@/lib/domain/GithubEntities";
 import UserCard from './UserCard';
 import { useCallback, useState } from 'react';
 

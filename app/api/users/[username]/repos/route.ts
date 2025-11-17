@@ -1,10 +1,6 @@
+import { GithubApi, EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { Logger } from '@/lib/backend/application/adapters/Logger';
 import { NextResponse } from 'next/server';
-import { 
-  GithubApi, 
-  ApiError, 
-  EmptyUsernameError,
-} from '@/lib/application/adapters/GithubApi';
-import { Logger } from '@/lib/application/adapters/Logger';
 
 export async function GET(
   request: Request,

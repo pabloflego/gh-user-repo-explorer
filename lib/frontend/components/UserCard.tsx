@@ -1,6 +1,6 @@
 'use client';
 
-import { GitHubRepository, GitHubUser } from '@/lib/application/ports/GithubApiPort';
+import type { GitHubUser, GitHubRepository } from "@/lib/domain/GithubEntities";
 import LoadingSpinner from './LoadingSpinner';
 
 interface UserCardProps {

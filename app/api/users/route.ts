@@ -1,10 +1,7 @@
+import { GithubApi, EmptyQueryError } from '@/lib/backend/application/adapters/GithubApi';
+import { Logger } from '@/lib/backend/application/adapters/Logger';
+import { ApiError } from 'next/dist/server/api-utils';
 import { NextResponse } from 'next/server';
-import { 
-  GithubApi, 
-  ApiError, 
-  EmptyQueryError,
-} from '@/lib/application/adapters/GithubApi';
-import { Logger } from '@/lib/application/adapters/Logger';
 
 export async function GET(request: Request) {
   // TODO: Use dependency injection for Logger and GithubApi, possibly with NEXTJS intrumentation

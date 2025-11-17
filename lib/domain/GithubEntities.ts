@@ -27,8 +27,3 @@ export interface GitHubUserSearchResponse {
   items: GitHubUser[];
   total_count: number;
 }
-
-export interface GithubApiPort {
-  searchUsers(query: string, limit?: number): Promise<GitHubUserSearchResponse>;
-  getUserRepositories(username: string, perPage?: number): Promise<GitHubRepository[]>;
-}
