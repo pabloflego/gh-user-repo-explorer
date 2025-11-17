@@ -1,13 +1,18 @@
 'use client';
+import { GitHubUser } from "@/lib/application/ports/GithubApiPort";
 import SearchInput from "@/lib/ui/SearchInput";
 import { useCallback, useState } from "react";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [users, setUsers] = useState<GitHubUser[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const searchUsers = useCallback(async () => {
     // TODO: Implement user search logic
   }, [searchQuery]);
+
+  const isEmptyState = !searchQuery && users.length === 0 && !isLoading;
 
   return (
     <div className="min-h-screen bg-gray-200 py-8 px-4 sm:px-6 lg:px-8">
@@ -32,7 +37,13 @@ export default function Home() {
 
         {/* Users List */}
 
-        {/* Empty State */}
+        {isEmptyState && (
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-600">
+              Enter a GitHub username to get started
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
