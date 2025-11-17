@@ -1,20 +1,37 @@
 'use client';
-import { GitHubUser } from "@/lib/application/ports/GithubApiPort";
-import ErrorMessage from "@/lib/client/components/ErrorMessage";
-import LoadingSpinner from "@/lib/client/components/LoadingSpinner";
-import SearchBox from "@/lib/client/components/SearchBox";
-import UserList from "@/lib/client/components/UserList";
+import ErrorMessage from "@/lib/frontend/components/ErrorMessage";
+import LoadingSpinner from "@/lib/frontend/components/LoadingSpinner";
+import SearchBox from "@/lib/frontend/components/SearchBox";
+import UserList from "@/lib/frontend/components/UserList";
+import { useClientApi } from "@/lib/frontend/ClientApiProvider";
 import { useCallback, useState } from "react";
+import type { GitHubUser } from "@/lib/domain/GithubEntities";
 
 export default function Home() {
+  const clientApi = useClientApi();
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<GitHubUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const searchUsers = useCallback(async () => {
-    // TODO: Implement user search logic
-  }, [searchQuery]);
+    if (!searchQuery.trim()) {
+      setUsers([]);
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const data = await clientApi.searchUsers(searchQuery);
+      setUsers(data.items || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while searching users');
+      setUsers([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchQuery, clientApi]);
 
   const isEmptyQuery = !searchQuery && users.length === 0 && !isLoading;
   const maybeResults = !isLoading && searchQuery.trim();
@@ -44,9 +61,7 @@ export default function Home() {
 
         {maybeResults && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-            <UserList
-              users={users}
-            />
+            <UserList users={users} />
           </div>
         )}
 
