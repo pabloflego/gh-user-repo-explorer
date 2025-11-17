@@ -27,6 +27,8 @@ export default function UserCard({
     <div className="w-full rounded-lg overflow-hidden">
       <button
         onClick={onClick}
+        aria-expanded={isExpanded}
+        aria-label={`${isExpanded ? 'Collapse' : 'Expand'} repositories for ${user.login}`}
         className="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 transition-colors text-left flex items-center justify-between rounded-lg"
       >
         <span className="text-gray-800 font-medium">{user.login}</span>
@@ -35,6 +37,7 @@ export default function UserCard({
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>

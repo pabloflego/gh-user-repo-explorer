@@ -44,6 +44,7 @@ export default function RepositoryList({
           ) : (
             <button
               onClick={onLoadMore}
+              aria-label={`Load more repositories for ${username}`}
               className="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition-colors"
             >
               Load More
