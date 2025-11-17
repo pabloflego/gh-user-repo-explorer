@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ClientApi } from './ClientApi';
-import { BrowserHttpClientPort } from '../ports/BrowserHttpClientPort';
+import type { BrowserHttpClientPort } from '../ports/BrowserHttpClientPort';
 
 describe('ClientApi', () => {
   let clientApi: ClientApi;
@@ -96,7 +96,7 @@ describe('ClientApi', () => {
 
       const result = await clientApi.fetchUserRepositories('testuser');
 
-      expect(mockHttpClient).toHaveBeenCalledWith('/api/users/testuser/repos');
+      expect(mockHttpClient).toHaveBeenCalledWith('/api/users/testuser/repos?page=1');
       expect(result).toEqual(mockRepos);
     });
 
@@ -109,7 +109,7 @@ describe('ClientApi', () => {
 
       await clientApi.fetchUserRepositories('test-user');
 
-      expect(mockHttpClient).toHaveBeenCalledWith('/api/users/test-user/repos');
+      expect(mockHttpClient).toHaveBeenCalledWith('/api/users/test-user/repos?page=1');
     });
 
     it('should throw error when response is not ok with error message', async () => {
@@ -139,7 +139,7 @@ describe('ClientApi', () => {
 
       await clientApi.fetchUserRepositories('');
 
-      expect(mockHttpClient).toHaveBeenCalledWith('/api/users//repos');
+      expect(mockHttpClient).toHaveBeenCalledWith('/api/users//repos?page=1');
     });
 
     it('should handle network error', async () => {
