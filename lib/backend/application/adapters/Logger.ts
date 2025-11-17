@@ -1,4 +1,4 @@
-import { LoggerPort } from "@/lib/application/ports/LoggerPort";
+import type { LoggerPort } from "@/lib/backend/application/ports/LoggerPort";
 
 export class Logger implements LoggerPort {
 
