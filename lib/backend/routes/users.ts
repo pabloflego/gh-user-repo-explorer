@@ -1,6 +1,5 @@
-import { EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { EmptyQueryError, ApiError, GithubApi } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
-import { createGithubApi } from '@/lib/backend/factories/githubApiFactory';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -16,7 +15,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const githubApi = createGithubApi(fetch);
+    const githubApi = new GithubApi(fetch);
     const data = await githubApi.searchUsers(query, 5);
     return NextResponse.json(data);
   } catch (error) {

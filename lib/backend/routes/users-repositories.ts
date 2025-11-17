@@ -1,6 +1,5 @@
-import { EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { EmptyUsernameError, ApiError, GithubApi } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
-import { createGithubApi } from '@/lib/backend/factories/githubApiFactory';
 import { NextResponse } from 'next/server';
 
 export async function GET(
@@ -21,7 +20,7 @@ export async function GET(
   }
 
   try {
-    const githubApi = createGithubApi(fetch);
+    const githubApi = new GithubApi(fetch);
     const data = await githubApi.getUserRepositories(username, page);
     return NextResponse.json(data);
   } catch (error) {

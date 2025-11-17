@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './users';
-import { RateLimitError, InvalidQueryError, EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { GithubApi, RateLimitError, InvalidQueryError, EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
-import type { GithubApiPort } from '@/lib/backend/application/ports/GithubApiPort';
 
-vi.mock('@/lib/backend/factories/githubApiFactory', () => {
+vi.mock('@/lib/backend/application/adapters/GithubApi', async () => {
+  const actual = await vi.importActual('@/lib/backend/application/adapters/GithubApi');
   return {
-    createGithubApi: vi.fn(),
+    ...actual,
+    GithubApi: vi.fn(),
   };
 });
 
@@ -20,21 +21,16 @@ describe('GET /api/users', () => {
   let mockSearchUsers: ReturnType<typeof vi.fn>;
   let mockLoggerLog: ReturnType<typeof vi.fn>;
   let mockLoggerError: ReturnType<typeof vi.fn>;
-  let mockGithubApi: GithubApiPort;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
     mockSearchUsers = vi.fn();
     mockLoggerLog = vi.fn();
     mockLoggerError = vi.fn();
     
-    mockGithubApi = {
-      searchUsers: mockSearchUsers as any,
-      getUserRepositories: vi.fn(),
-    };
-    
-    const { createGithubApi } = await import('@/lib/backend/factories/githubApiFactory');
-    (createGithubApi as ReturnType<typeof vi.fn>).mockReturnValue(mockGithubApi);
+    (GithubApi as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
+      this.searchUsers = mockSearchUsers;
+    });
     
     (Logger as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
       this.log = mockLoggerLog;
@@ -200,7 +196,6 @@ describe('GET /api/users', () => {
     await GET(request1);
     await GET(request2);
 
-    const { createGithubApi } = await import('@/lib/backend/factories/githubApiFactory');
-    expect(createGithubApi).toHaveBeenCalledTimes(2);
+    expect(GithubApi).toHaveBeenCalledTimes(2);
   });
 });
