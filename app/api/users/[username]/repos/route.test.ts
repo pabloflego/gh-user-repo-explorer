@@ -3,15 +3,15 @@ import { GET } from './route';
 import { GithubApi, RateLimitError, UserNotFoundError, EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
 
-vi.mock('@/lib/application/adapters/GithubApi', async () => {
-  const actual = await vi.importActual('@/lib/application/adapters/GithubApi');
+vi.mock('@/lib/backend/application/adapters/GithubApi', async () => {
+  const actual = await vi.importActual('@/lib/backend/application/adapters/GithubApi');
   return {
     ...actual,
     GithubApi: vi.fn(),
   };
 });
 
-vi.mock('@/lib/application/adapters/Logger', () => {
+vi.mock('@/lib/backend/application/adapters/Logger', () => {
   return {
     Logger: vi.fn(),
   };

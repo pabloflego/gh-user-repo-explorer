@@ -1,6 +1,5 @@
-import { GithubApi, EmptyQueryError } from '@/lib/backend/application/adapters/GithubApi';
+import { GithubApi, EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
-import { ApiError } from 'next/dist/server/api-utils';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
