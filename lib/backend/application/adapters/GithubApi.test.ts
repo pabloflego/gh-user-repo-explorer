@@ -10,8 +10,9 @@ import {
   GITHUB_API_BASE_URL,
   GITHUB_API_HEADERS
 } from './GithubApi';
-import { GitHubUserSearchResponse, GitHubRepository } from '@/lib/application/ports/GithubApiPort';
-import { HttpClientPort } from '@/lib/application/ports/HttpClientPort';
+import { GitHubUserSearchResponse } from '@/lib/backend/application/ports/GithubApiPort';
+import { HttpClientPort } from '@/lib/backend/application/ports/HttpClientPort';
+import { GitHubRepository } from '@/lib/domain/GithubEntities';
 
 describe('GithubApi', () => {
   let mockHttpClient: HttpClientPort & ReturnType<typeof vi.fn>;
