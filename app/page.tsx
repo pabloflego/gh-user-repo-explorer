@@ -1,5 +1,6 @@
 'use client';
 import { GitHubUser } from "@/lib/application/ports/GithubApiPort";
+import ErrorMessage from "@/lib/ui/ErrorMessage";
 import LoadingSpinner from "@/lib/ui/LoadingSpinner";
 import SearchInput from "@/lib/ui/SearchInput";
 import { useCallback, useState } from "react";
@@ -8,6 +9,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<GitHubUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const searchUsers = useCallback(async () => {
     // TODO: Implement user search logic
@@ -38,7 +40,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* Errors */}
+        {error && (
+          <div className="mb-4">
+            <ErrorMessage message={error} />
+          </div>
+        )}
 
         {/* Users List */}
 
