@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { 
-  GitHubApi, 
+  GithubApi, 
   ApiError, 
   EmptyQueryError,
 } from '@/lib/application/adapters/GithubApi';
 import { Logger } from '@/lib/application/adapters/Logger';
 
 export async function GET(request: Request) {
+  // TODO: Use dependency injection for Logger and GitHubApi
   const logger = new Logger('UserAPI');
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const githubApi = new GitHubApi();
+    const githubApi = new GithubApi();
     const data = await githubApi.searchUsers(query, 5);
     return NextResponse.json(data);
   } catch (error) {

@@ -49,7 +49,7 @@ export class UserNotFoundError extends ApiError {
   }
 }
 
-export class GitHubApi implements GithubApiPort {
+export class GithubApi implements GithubApiPort {
 
   constructor(
     private httpClient: HttpClientPort = fetch

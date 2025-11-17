@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './route';
 import { 
-  GitHubApi,
+  GithubApi,
   ApiError,
   EmptyQueryError,
   RateLimitError,
@@ -13,7 +13,7 @@ vi.mock('@/lib/application/adapters/GithubApi', async () => {
   const actual = await vi.importActual('@/lib/application/adapters/GithubApi');
   return {
     ...actual,
-    GitHubApi: vi.fn(),
+    GithubApi: vi.fn(),
   };
 });
 
@@ -34,7 +34,7 @@ describe('GET /api/users', () => {
     mockLoggerLog = vi.fn();
     mockLoggerError = vi.fn();
     
-    (GitHubApi as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
+    (GithubApi as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
       this.searchUsers = mockSearchUsers;
     });
     
@@ -202,6 +202,6 @@ describe('GET /api/users', () => {
     await GET(request1);
     await GET(request2);
 
-    expect(GitHubApi).toHaveBeenCalledTimes(2);
+    expect(GithubApi).toHaveBeenCalledTimes(2);
   });
 });

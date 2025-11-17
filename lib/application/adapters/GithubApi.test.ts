@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { 
-  GitHubApi, 
+  GithubApi, 
   ApiError, 
   EmptyQueryError, 
   EmptyUsernameError, 
@@ -13,13 +13,13 @@ import {
 import { GitHubUserSearchResponse, GitHubRepository } from '@/lib/application/ports/GithubApiPort';
 import { HttpClientPort } from '@/lib/application/ports/HttpClientPort';
 
-describe('GitHubApi', () => {
+describe('GithubApi', () => {
   let mockHttpClient: HttpClientPort & ReturnType<typeof vi.fn>;
-  let githubApi: GitHubApi;
+  let githubApi: GithubApi;
 
   beforeEach(() => {
     mockHttpClient = vi.fn() as HttpClientPort & ReturnType<typeof vi.fn>;
-    githubApi = new GitHubApi(mockHttpClient);
+    githubApi = new GithubApi(mockHttpClient);
   });
 
   describe('searchUsers', () => {
