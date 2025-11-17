@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './users';
-import { GithubApi, RateLimitError, InvalidQueryError, EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { RateLimitError, InvalidQueryError, EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
+import type { GithubApiPort } from '@/lib/backend/application/ports/GithubApiPort';
 
-vi.mock('@/lib/backend/application/adapters/GithubApi', async () => {
-  const actual = await vi.importActual('@/lib/backend/application/adapters/GithubApi');
+vi.mock('@/lib/backend/factories/githubApiFactory', () => {
   return {
-    ...actual,
-    GithubApi: vi.fn(),
+    createGithubApi: vi.fn(),
   };
 });
 
@@ -21,16 +20,21 @@ describe('GET /api/users', () => {
   let mockSearchUsers: ReturnType<typeof vi.fn>;
   let mockLoggerLog: ReturnType<typeof vi.fn>;
   let mockLoggerError: ReturnType<typeof vi.fn>;
+  let mockGithubApi: GithubApiPort;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     mockSearchUsers = vi.fn();
     mockLoggerLog = vi.fn();
     mockLoggerError = vi.fn();
     
-    (GithubApi as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
-      this.searchUsers = mockSearchUsers;
-    });
+    mockGithubApi = {
+      searchUsers: mockSearchUsers as any,
+      getUserRepositories: vi.fn(),
+    };
+    
+    const { createGithubApi } = await import('@/lib/backend/factories/githubApiFactory');
+    (createGithubApi as ReturnType<typeof vi.fn>).mockReturnValue(mockGithubApi);
     
     (Logger as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
       this.log = mockLoggerLog;
@@ -187,7 +191,7 @@ describe('GET /api/users', () => {
     expect(mockSearchUsers).toHaveBeenCalledWith('john doe', 5);
   });
 
-  it('should create new GitHubApi instance for each request', async () => {
+  it('should create new GitHub API instance for each request', async () => {
     mockSearchUsers.mockResolvedValue({ items: [], total_count: 0 });
 
     const request1 = new Request('http://localhost:3000/api/users?q=user1');
@@ -196,6 +200,7 @@ describe('GET /api/users', () => {
     await GET(request1);
     await GET(request2);
 
-    expect(GithubApi).toHaveBeenCalledTimes(2);
+    const { createGithubApi } = await import('@/lib/backend/factories/githubApiFactory');
+    expect(createGithubApi).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,9 +1,9 @@
-import { GithubApi, EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { EmptyQueryError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
+import { createGithubApi } from '@/lib/backend/factories/githubApiFactory';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  // TODO: Use dependency injection for Logger and GithubApi, possibly with NEXTJS intrumentation
   const logger = new Logger('UserAPI');
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const githubApi = new GithubApi();
+    const githubApi = createGithubApi(fetch);
     const data = await githubApi.searchUsers(query, 5);
     return NextResponse.json(data);
   } catch (error) {

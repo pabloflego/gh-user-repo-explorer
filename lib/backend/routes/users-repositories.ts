@@ -1,12 +1,12 @@
-import { GithubApi, EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
+import { createGithubApi } from '@/lib/backend/factories/githubApiFactory';
 import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ username: string }> }
 ) {
-  // TODO: Use dependency injection for Logger and GithubApi, possibly with NEXTJS intrumentation
   const logger = new Logger('ReposAPI');
   const { username } = await params;
   const { searchParams } = new URL(request.url);
@@ -21,7 +21,7 @@ export async function GET(
   }
 
   try {
-    const githubApi = new GithubApi();
+    const githubApi = createGithubApi(fetch);
     const data = await githubApi.getUserRepositories(username, page);
     return NextResponse.json(data);
   } catch (error) {

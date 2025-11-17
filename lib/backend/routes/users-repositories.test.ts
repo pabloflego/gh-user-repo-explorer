@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './users-repositories';
-import { GithubApi, RateLimitError, UserNotFoundError, EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
+import { RateLimitError, UserNotFoundError, EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
+import type { GithubApiPort } from '@/lib/backend/application/ports/GithubApiPort';
 
-vi.mock('@/lib/backend/application/adapters/GithubApi', async () => {
-  const actual = await vi.importActual('@/lib/backend/application/adapters/GithubApi');
+vi.mock('@/lib/backend/factories/githubApiFactory', () => {
   return {
-    ...actual,
-    GithubApi: vi.fn(),
+    createGithubApi: vi.fn(),
   };
 });
 
@@ -21,16 +20,21 @@ describe('GET /api/users/[username]/repos', () => {
   let mockGetUserRepositories: ReturnType<typeof vi.fn>;
   let mockLoggerLog: ReturnType<typeof vi.fn>;
   let mockLoggerError: ReturnType<typeof vi.fn>;
+  let mockGithubApi: GithubApiPort;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     mockGetUserRepositories = vi.fn();
     mockLoggerLog = vi.fn();
     mockLoggerError = vi.fn();
     
-    (GithubApi as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
-      this.getUserRepositories = mockGetUserRepositories;
-    });
+    mockGithubApi = {
+      searchUsers: vi.fn(),
+      getUserRepositories: mockGetUserRepositories as any,
+    };
+    
+    const { createGithubApi } = await import('@/lib/backend/factories/githubApiFactory');
+    (createGithubApi as ReturnType<typeof vi.fn>).mockReturnValue(mockGithubApi);
     
     (Logger as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
       this.log = mockLoggerLog;
@@ -196,6 +200,7 @@ describe('GET /api/users/[username]/repos', () => {
     await GET(request1, { params: params1 });
     await GET(request2, { params: params2 });
 
-    expect(GithubApi).toHaveBeenCalledTimes(2);
+    const { createGithubApi } = await import('@/lib/backend/factories/githubApiFactory');
+    expect(createGithubApi).toHaveBeenCalledTimes(2);
   });
 });
