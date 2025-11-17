@@ -1,5 +1,6 @@
 'use client';
 import { GitHubUser } from "@/lib/application/ports/GithubApiPort";
+import LoadingSpinner from "@/lib/ui/LoadingSpinner";
 import SearchInput from "@/lib/ui/SearchInput";
 import { useCallback, useState } from "react";
 
@@ -31,7 +32,11 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Loading State */}
+        {isLoading && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+            <LoadingSpinner />
+          </div>
+        )}
 
         {/* Errors */}
 
