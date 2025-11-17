@@ -3,6 +3,7 @@ import { GitHubUser } from "@/lib/application/ports/GithubApiPort";
 import ErrorMessage from "@/lib/client/components/ErrorMessage";
 import LoadingSpinner from "@/lib/client/components/LoadingSpinner";
 import SearchBox from "@/lib/client/components/SearchBox";
+import UserList from "@/lib/client/components/UserList";
 import { useCallback, useState } from "react";
 
 export default function Home() {
@@ -15,7 +16,8 @@ export default function Home() {
     // TODO: Implement user search logic
   }, [searchQuery]);
 
-  const isEmptyState = !searchQuery && users.length === 0 && !isLoading;
+  const isEmptyQuery = !searchQuery && users.length === 0 && !isLoading;
+  const maybeResults = !isLoading && searchQuery.trim();
 
   return (
     <div className="min-h-screen bg-gray-200 py-8 px-4 sm:px-6 lg:px-8">
@@ -40,9 +42,15 @@ export default function Home() {
           </div>
         )}
 
-        {/* Users List */}
+        {maybeResults && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+            <UserList
+              users={users}
+            />
+          </div>
+        )}
 
-        {isEmptyState && (
+        {isEmptyQuery && (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
             <p className="text-gray-600">
               Enter a GitHub username to get started
