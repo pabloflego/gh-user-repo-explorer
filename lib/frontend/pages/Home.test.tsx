@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Home } from './Home';
 import type { ClientApi } from '@/lib/frontend/application/adapters/ClientApi';
@@ -88,7 +88,13 @@ describe('Home', () => {
       const spinner = document.querySelector('.animate-spin');
       expect(spinner).toBeInTheDocument();
 
-      resolveSearch!({ items: [] });
+      await act(async () => {
+        resolveSearch!({ items: [] });
+      });
+      
+      await waitFor(() => {
+        expect(document.querySelector('.animate-spin')).not.toBeInTheDocument();
+      });
     });
 
     it('should show error message when search fails', async () => {
@@ -404,7 +410,13 @@ describe('Home', () => {
       const spinner = document.querySelector('.animate-spin');
       expect(spinner).toBeInTheDocument();
 
-      resolveLoadMore!({ items: [], hasNextPage: false });
+      await act(async () => {
+        resolveLoadMore!({ items: [], hasNextPage: false });
+      });
+      
+      await waitFor(() => {
+        expect(document.querySelector('.animate-spin')).not.toBeInTheDocument();
+      });
     });
 
     it('should show error when loading more repositories fails', async () => {
