@@ -28,11 +28,11 @@ describe('GET /api/users', () => {
     mockLoggerLog = vi.fn();
     mockLoggerError = vi.fn();
     
-    (GithubApi as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
+    (GithubApi as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: { searchUsers: unknown }) {
       this.searchUsers = mockSearchUsers;
     });
     
-    (Logger as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: any) {
+    (Logger as unknown as ReturnType<typeof vi.fn>).mockImplementation(function(this: { log: unknown; error: unknown }) {
       this.log = mockLoggerLog;
       this.error = mockLoggerError;
     });

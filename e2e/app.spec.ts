@@ -73,7 +73,7 @@ test.describe('GitHub User Repo Explorer', () => {
     await expect(label).toHaveCount(1);
   });
 
-  test('should navigate repository links in new tab', async ({ page, context }) => {
+  test('should navigate repository links in new tab', async ({ page }) => {
     // Search and expand user
     await page.getByPlaceholder('Enter username').fill('octocat');
     await page.waitForTimeout(400);

@@ -85,7 +85,7 @@ describe('RepositoryList', () => {
   });
 
   it('should use repository id as key', () => {
-    const { container } = render(<RepositoryList repositories={mockRepositories} username="testuser" />);
+    render(<RepositoryList repositories={mockRepositories} username="testuser" />);
     
     expect(screen.getByText('repo-one')).toBeInTheDocument();
     expect(screen.getByText('repo-two')).toBeInTheDocument();

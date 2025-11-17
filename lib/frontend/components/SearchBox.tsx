@@ -32,7 +32,7 @@ export default function SearchBox({ value, onChange, onSearch }: SearchBoxProps)
     if (debouncedValue.trim()) {
       onSearch();
     }
-  }, [debouncedValue]);
+  }, [debouncedValue, onSearch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => { onChange(sanitizeInput(e.target.value)) };
 

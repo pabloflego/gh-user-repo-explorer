@@ -71,11 +71,11 @@ describe('Home', () => {
 
     it('should show loading spinner while searching', async () => {
       const user = userEvent.setup();
-      let resolveSearch: (value: any) => void;
+      let resolveSearch: (value: unknown) => void;
       const searchPromise = new Promise((resolve) => {
         resolveSearch = resolve;
       });
-      vi.mocked(mockClientApi.searchUsers).mockReturnValue(searchPromise as any);
+      vi.mocked(mockClientApi.searchUsers).mockReturnValue(searchPromise as Promise<{ items: never[] }>);
 
       render(<Home />);
 
@@ -375,7 +375,7 @@ describe('Home', () => {
         ],
         hasNextPage: true,
       };
-      let resolveLoadMore: (value: any) => void;
+      let resolveLoadMore: (value: unknown) => void;
       const loadMorePromise = new Promise((resolve) => {
         resolveLoadMore = resolve;
       });
@@ -383,7 +383,7 @@ describe('Home', () => {
       vi.mocked(mockClientApi.searchUsers).mockResolvedValue(mockUsers);
       vi.mocked(mockClientApi.fetchUserRepositories)
         .mockResolvedValueOnce(mockReposPage1)
-        .mockReturnValueOnce(loadMorePromise as any);
+        .mockReturnValueOnce(loadMorePromise as Promise<{ items: never[]; hasNextPage: boolean }>);
 
       render(<Home />);
 

@@ -4,7 +4,7 @@ export class Logger implements LoggerPort {
 
   constructor(
     private prefix: string = '',
-    private provider: { log: Function, error: Function} = console
+    private provider: { log: (...args: unknown[]) => void, error: (...args: unknown[]) => void} = console
   ) {}
 
   log(message: string): void {
