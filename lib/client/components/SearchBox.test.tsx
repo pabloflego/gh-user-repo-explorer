@@ -1,0 +1,107 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import SearchBox from './SearchBox';
+
+describe('SearchBox', () => {
+  let mockOnChange: (value: string) => void;
+  let mockOnSearch: () => void;
+
+  beforeEach(() => {
+    mockOnChange = vi.fn();
+    mockOnSearch = vi.fn();
+  });
+
+  it('should render input field and button', () => {
+    render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    const input = screen.getByPlaceholderText('Enter username');
+    const button = screen.getByRole('button', { name: /search/i });
+    
+    expect(input).toBeInTheDocument();
+    expect(button).toBeInTheDocument();
+  });
+
+  it('should display the provided value', () => {
+    render(<SearchBox value="testuser" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    const input = screen.getByPlaceholderText('Enter username') as HTMLInputElement;
+    expect(input.value).toBe('testuser');
+  });
+
+  it('should call onChange when user types', () => {
+    render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    const input = screen.getByPlaceholderText('Enter username');
+    fireEvent.change(input, { target: { value: 'a' } });
+    
+    expect(mockOnChange).toHaveBeenCalledWith('a');
+  });
+
+  it('should call onChange with updated value', () => {
+    render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    const input = screen.getByPlaceholderText('Enter username');
+    fireEvent.change(input, { target: { value: 'test' } });
+    
+    expect(mockOnChange).toHaveBeenCalledWith('test');
+  });
+
+  it('should call onSearch when button is clicked', () => {
+    render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    const button = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(button);
+    
+    expect(mockOnSearch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should debounce search calls', async () => {
+    const { rerender } = render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    rerender(<SearchBox value="a" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    await waitFor(() => {
+      expect(mockOnSearch).toHaveBeenCalled();
+    }, { timeout: 500 });
+  });
+
+  it('should not trigger search for empty input', async () => {
+    render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    expect(mockOnSearch).not.toHaveBeenCalled();
+  });
+
+  it('should not trigger search for whitespace-only input', async () => {
+    const { rerender } = render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    rerender(<SearchBox value="   " onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    expect(mockOnSearch).not.toHaveBeenCalled();
+  });
+
+  it('should trigger search after debounce period', async () => {
+    const { rerender } = render(<SearchBox value="" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    rerender(<SearchBox value="test" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    await waitFor(() => {
+      expect(mockOnSearch).toHaveBeenCalled();
+    }, { timeout: 500 });
+  });
+
+  it('should update value when prop changes', () => {
+    const { rerender } = render(<SearchBox value="initial" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    let input = screen.getByPlaceholderText('Enter username') as HTMLInputElement;
+    expect(input.value).toBe('initial');
+    
+    rerender(<SearchBox value="updated" onChange={mockOnChange} onSearch={mockOnSearch} />);
+    
+    input = screen.getByPlaceholderText('Enter username') as HTMLInputElement;
+    expect(input.value).toBe('updated');
+  });
+});
