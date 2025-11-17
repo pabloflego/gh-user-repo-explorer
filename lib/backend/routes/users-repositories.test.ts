@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { GET } from './route';
+import { GET } from './users-repositories';
 import { GithubApi, RateLimitError, UserNotFoundError, EmptyUsernameError, ApiError } from '@/lib/backend/application/adapters/GithubApi';
 import { Logger } from '@/lib/backend/application/adapters/Logger';
 
