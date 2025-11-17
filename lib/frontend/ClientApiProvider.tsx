@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, ReactNode, useMemo } from 'react';
-import { ClientApi } from '../application/adapters/ClientApi';
-import { ClientApiPort } from '../application/ports/ClientApiPort';
+import { ClientApi } from './application/adapters/ClientApi';
+import { ClientApiPort } from './application/ports/ClientApiPort';
 
 const ClientApiContext = createContext<ClientApiPort | null>(null);
 
